@@ -1,7 +1,7 @@
 import socket
 import struct
 from threading import Thread
-from time import sleep
+from time import sleep, time
 
 
 class NetFT:
@@ -29,6 +29,8 @@ class NetFT:
         self.mean = [0.0] * 6
         self.data = [0.0] * 6
         self.stream = False
+        self.stream_start = None
+        self.stream_count = 0
 
         # Counts per Force/Torque which determines conversion from raw to wrench.
         # Must be manually set from the NetFT configuration for now (see web interface to confirm values).
@@ -62,6 +64,7 @@ class NetFT:
                 values are the forces recorded, and the last three are the measured
                 torques.
         """
+        self.stream_count += 1
         rawdata = self.sock.recv(1024)
         data = struct.unpack('!IIIiiiiii', rawdata)[3:]
         self.data = [(data[i] * (self.force_scale if i < 3 else self.torque_scale)) - self.mean[i] for i in range(6)]
@@ -186,9 +189,20 @@ class NetFT:
         self.getMeasurements(0)
         if handler:
             self.stream = True
+            self.stream_start = time()
+            self.stream_count = 0
             self.thread = Thread(target=self.receiveHandler)
             self.thread.daemon = True
             self.thread.start()
+
+    def get_frequency(self):
+        """Get frequency of data streaming"""
+        if self.stream_start is None:
+            return 0.0
+        elapsed_time = time() - self.stream_start
+        if elapsed_time == 0:
+            return 0.0
+        return self.stream_count / elapsed_time
 
     def getMeasurements(self, n):
         """Request a given number of samples from the sensor
