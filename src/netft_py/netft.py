@@ -81,6 +81,10 @@ class NetFT:
         Returns:
             list of float: The mean values calculated.
         """
+        was_streaming = self.stream
+        if was_streaming:
+            self.stopStreaming()
+
         self.mean = [0] * 6
         self.getMeasurements(n=n)
         mean = [0] * 6
@@ -89,6 +93,9 @@ class NetFT:
             for i in range(6):
                 mean[i] += self.measurement()[i] / float(n)
         self.mean = mean
+
+        if was_streaming:
+            self.startStreaming()
         return mean
 
     def zero(self):

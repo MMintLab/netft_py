@@ -12,10 +12,10 @@ def vis_netft(ip: str, tare: bool = False):
     # wrench-sensor Python API
     # ------------------------------------------------------------------
     netft = NetFT(ip)
+    netft.startStreaming()
     if tare:
         netft.tare()
         print("Taring complete!")
-    netft.startStreaming()
 
     def get_wrench():
         return netft.measurement()
