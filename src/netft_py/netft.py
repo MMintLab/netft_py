@@ -26,8 +26,16 @@ class NetFT:
         self.port = 49152
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.connect((ip, self.port))
-        self.mean = [0] * 6
+        self.mean = [0.0] * 6
+        self.data = [0.0] * 6
         self.stream = False
+
+        # Counts per Force/Torque which determines conversion from raw to wrench.
+        # Must be manually set from the NetFT configuration for now (see web interface to confirm values).
+        counts_per_force = 1000000
+        counts_per_torque = 1000000
+        self.force_scale = 1.0 / counts_per_force
+        self.torque_scale = 1.0 / counts_per_torque
 
     def send(self, command, count=0):
         """Send a given command to the Net F/T box with specified sample count.
@@ -56,10 +64,10 @@ class NetFT:
         """
         rawdata = self.sock.recv(1024)
         data = struct.unpack('!IIIiiiiii', rawdata)[3:]
-        self.data = [data[i] - self.mean[i] for i in range(6)]
+        self.data = [(data[i] * (self.force_scale if i < 3 else self.torque_scale)) - self.mean[i] for i in range(6)]
         return self.data
 
-    def tare(self, n=10):
+    def tare(self, n=100):
         """Tare the sensor.
 
         This function takes a given number of readings from the sensor
