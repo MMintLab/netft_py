@@ -3,7 +3,7 @@ import struct
 from threading import Thread
 from time import sleep
 
-class Sensor:
+class NetFT:
 	'''The class interface for an ATI Force/Torque sensor.
 
 	This class contains all the functions necessary to communicate

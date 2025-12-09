@@ -1,0 +1,19 @@
+[project]
+name = "netft-py"
+version = "2.1.0"
+description = "Python package for working with ATI Gamma NetFT sensor"
+readme = "README.md"
+authors = [
+    { name = "Mark Van der Merwe", email = "markvdm@umich.edu" },
+    { name = "Cameron Devine", email = "cameron.devine@alleninstitute.org" }
+]
+requires-python = ">=3.8"
+dependencies = [
+    "numpy>=1.24.4",
+]
+license-files = ["LICENSE"]
+
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
