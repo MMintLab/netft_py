@@ -7,9 +7,51 @@ supports requesting single measurements, streaming measurements, taring the sens
 
 Install via `pip install -e .` from repository root.
 
-## Use
+## Usage
 
-To be updated...
+```python
+from netft_py import NetFT
+
+netft = NetFT(ip="192.168.1.33")
+```
+
+The `NetFT` class can be used to get individual measurements or continuously stream:
+
+#### Individual Measurements:
+```python
+wrench = netft.getMeasurement()  # Get single measurement
+wrenches = netft.getMeasurements(n=5)  # Get multiple measurements
+
+force = netft.getForce() # Get only force component
+torque = netft.getTorque() # Get only torque component
+```
+
+#### Streaming Measurements:
+```python
+netft.startStreaming()
+
+# Then read the latest wrench feedback using the following:
+wrench = netft.measurement()
+```
+
+In practice, the data comes in at ~500Hz.
+
+#### Taring the sensor:
+```python
+netft.tare(n=100)  # Tare using 100 samples
+```
+
+To "reset" the tare and return to raw measurements:
+```python
+netft.zero()
+```
+
+### Scripts:
+
+You can use the `vis_netft.py` script in the `scripts/` folder to visualize wrench data in real-time.
+```bash
+python scripts/vis_netft.py 192.168.1.33
+```
 
 ## Credit
 
